@@ -1,0 +1,212 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #000000;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+body, input, button, select, footer, textarea {
+    font-family: 'Montserrat', sans-serif;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #000;
+    color: #fff;
+}
+
+.container {
+    max-width: 600px;
+    margin: 30px auto;
+    background: rgba(0, 2, 29, 0.85);
+    background-blend-mode: overlay;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 119, 255, 0.5);
+    flex: 1;
+    padding: 20px;
+    background-image: url('/static/FF_texture.png');
+    background-repeat: repeat;
+    background-size: auto;
+    width: 600px;
+    height: 400px;
+    overflow: auto;
+}
+
+h1, h2 {
+    color: #0077FF;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+input, button {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #0077FF;
+    border-radius: 8px;
+    background-color: #000000;
+    color: #ffffff;
+}
+
+input::placeholder {
+    color: #555;
+}
+
+button {
+    background-color: #0077FF;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #005fcc;
+}
+
+a {
+    color: #0077FF;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.error {
+    color: #FF5555;
+    font-weight: bold;
+}
+
+.site-header {
+    background: #00021d;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px 40px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 119, 255, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.logo-header {
+    height: auto;
+    width: 250px;
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+}
+
+table.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 119, 255, 0.3);
+}
+
+.summary-table th, .summary-table td {
+    padding: 12px 20px;
+    text-align: center;
+    border-bottom: 1px solid #333;
+    color: #ffffff;
+}
+
+.summary-table th {
+    background-color: #0077FF;
+    color: white;
+}
+
+.summary-table tr:last-child td {
+    border-bottom: none;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0077FF;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.back-button:hover {
+    background-color: #005fcc;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.logo {
+    height: 40px;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.site-footer {
+    background: #00021d;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px 40px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 -4px 12px rgba(0, 119, 255, 0.2);
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+}
+
+.container::-webkit-scrollbar {
+    width: 10px;
+}
+
+.container::-webkit-scrollbar-track {
+    background: #00021d;
+    border-radius: 10px;
+}
+
+.container::-webkit-scrollbar-thumb {
+    background-color: #0077FF;
+    border-radius: 10px;
+    border: 2px solid #00021d;
+}
+
+.container {
+    scrollbar-width: thin;
+    scrollbar-color: #0077FF #00021d;
+}
+
+.currency-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+    justify-content: flex-start;
+    color: white;
+    font-family: 'Montserrat';
+}
+
+

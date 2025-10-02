@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Ваши финансы</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/png" href="/static/logo_Finance_Flow.png" sizes="32x32">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+        <img src="/static/Finance_Flow.png" alt="Finance Flow" class="logo-header">
+    </header>
+    <div class="container">
+        <h1>Финансовый отчёт {{ month }}</h1>
+        <form method="get" action="/data">
+            <label>Фильтр по месяцу (ГГГГ-ММ):</label>
+            <input type="text" name="month" placeholder="2025-06" />
+            <button type="submit">Применить</button>
+        </form>
+
+        <h2>Доходы</h2>
+        <ul>
+            {% for income in incomes %}
+            <li>{{ income['description'] }} — {{ income['amount'] }} {{ income['currency'] }} ({{ income['created_at'][:10] }})</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Расходы</h2>
+        <ul>
+            {% for expense in expenses %}
+            <li>{{ expense['description'] }} — {{ expense['amount'] }} {{ expense['currency'] }} ({{ expense['created_at'][:10] }})</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Сводная таблица</h2>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Валюта</th>
+                    <th>Доходы</th>
+                    <th>Расходы</th>
+                    <th>Баланс</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for currency in totals %}
+                <tr>
+                    <td>{{ currency }}</td>
+                    <td>{{ totals[currency]['income'] }}</td>
+                    <td>{{ totals[currency]['expense'] }}</td>
+                    <td>{{ totals[currency]['balance'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/" class="back-button">❰ Вернуться к операциям</a>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/analytics" class="action-button">Посмотреть аналитику по категориям</a>
+        </div>
+    </div>
+    <footer class="site-footer">
+        <p>© 2025 Finance Flow. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/png" href="/static/logo_Finance_Flow.png" sizes="32x32">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-content">
+            <img src="/static/Finance_Flow.png" alt="Finance Flow" class="logo-header">
+        </div>
+    </header>
+    <div class="container">
+        <h1>Регистрация</h1>
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="post">
+            <input type="text" name="username" placeholder="Логин" required />
+            <input type="email" name="email" placeholder="Email" required />
+            <input type="password" name="password" placeholder="Пароль" required />
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+        <a href="/login">Уже есть аккаунт?</a>
+    </div>
+    <footer class="site-footer">
+        <p>© 2025 Finance Flow. All rights reserved.</p>
+    </footer>
+</body>
+</html>

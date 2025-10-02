@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить доход/расход</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/png" href="/static/logo_Finance_Flow.png" sizes="32x32">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+        <img src="/static/Finance_Flow.png" alt="Finance Flow" class="logo-header">
+    </header>
+        <div class="container">
+            <h1>Добро пожаловать, {{ user['username'] }}</h1>
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="/logout" class="back-button">❰ Выход</a>
+            </div>
+            <h2>Добавить доход</h2>
+                <form method="post" action="/add-income">
+                    <input type="text" name="description" placeholder="Описание" required />
+                    <input type="number" step="0.01" name="amount" placeholder="Сумма" required />
+                    <select name="currency" required>
+                        <option value="RUB">₽ RUB</option>
+                        <option value="EUR">€ EUR</option>
+                        <option value="USD">$ USD</option>
+                    </select>
+                    <button type="submit">Добавить доход</button>
+                </form>
+
+            <h2>Добавить расход</h2>
+                <form method="post" action="/add-expense">
+                    <input type="text" name="description" placeholder="Описание" required />
+                    <input type="number" step="0.01" name="amount" placeholder="Сумма" required />
+                    <select name="currency" required>
+                        <option value="RUB">₽ RUB</option>
+                        <option value="EUR">€ EUR</option>
+                        <option value="USD">$ USD</option>
+                    </select>
+                    <button type="submit">Добавить расход</button>
+            </form>
+
+            <a href="/data">Посмотреть отчёт</a>
+        </div>
+    <footer class="site-footer">
+        <p>© 2025 Finance Flow. All rights reserved.</p>
+    </footer>
+</body>
+</html>
