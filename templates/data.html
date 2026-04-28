@@ -15,21 +15,25 @@
         <h1>Финансовый отчёт {{ month }}</h1>
         <form method="get" action="/data">
             <label>Фильтр по месяцу (ГГГГ-ММ):</label>
-            <input type="text" name="month" placeholder="2025-06" />
+            <input type="text" name="month" placeholder="2026-01" />
             <button type="submit">Применить</button>
         </form>
 
         <h2>Доходы</h2>
         <ul>
             {% for income in incomes %}
-            <li>{{ income['description'] }} — {{ income['amount'] }} {{ income['currency'] }} ({{ income['created_at'][:10] }})</li>
+            <li>{{ income.description }} — {{ income.amount }} {{ income.currency }}
+                ({{ income.created_at.strftime('%Y-%m-%d') }})
+            </li>
             {% endfor %}
         </ul>
 
         <h2>Расходы</h2>
         <ul>
             {% for expense in expenses %}
-            <li>{{ expense['description'] }} — {{ expense['amount'] }} {{ expense['currency'] }} ({{ expense['created_at'][:10] }})</li>
+            <li>{{ expense.description }} — {{ expense.amount }} {{ expense.currency }}
+                ({{ expense.created_at.strftime('%Y-%m-%d') }})
+            </li>
             {% endfor %}
         </ul>
 
@@ -62,7 +66,7 @@
         </div>
     </div>
     <footer class="site-footer">
-        <p>© 2025 Finance Flow. All rights reserved.</p>
+        <p>© 2026 Finance Flow. All rights reserved.</p>
     </footer>
 </body>
 </html>
