@@ -1,16 +1,33 @@
-from pydantic import BaseModel
-from typing import Optional
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, text, func
+from sqlalchemy.orm import relationship
+from db_engine import Base
 
-class User(BaseModel):
-    id: Optional[int]
-    username: str
-    email: str
-    password: str
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    password = Column(String, nullable=False)
+    monthly_limit = Column(Float, default=0.0)
+    incomes = relationship("Income", back_populates="user")
+    expenses = relationship("Expense", back_populates="user")
 
-class FinanceEntry(BaseModel):
-    id: Optional[int]
-    user_id: int
-    description: str
-    amount: float
-    currency: str
-    created_at: Optional[str]
+class Income(Base):
+    __tablename__ = "incomes"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    description = Column(String, nullable=False)
+    amount = Column(Float, nullable=False)
+    currency = Column(String, default="RUB")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    user = relationship("User", back_populates="incomes")
+
+class Expense(Base):
+    __tablename__ = "expenses"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    description = Column(String, nullable=False)
+    amount = Column(Float, nullable=False)
+    currency = Column(String, default="RUB")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    user = relationship("User", back_populates="expenses")
