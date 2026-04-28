@@ -2,7 +2,7 @@ import spacy
 from currency_converter import CurrencyConverter
 
 
-nlp = spacy.load("ru_core_news_sm")
+nlp = spacy.load('ru_core_news_sm')
 
 CATEGORY_KEYWORDS = {
     "Доходы": ["зарплата", "доход", "заработок", "премия", "выручка"],
@@ -51,4 +51,3 @@ def convert_all_to_currency(transactions, target_currency):
         t_copy["currency"] = target_currency
         result.append(t_copy)
     return result
-
