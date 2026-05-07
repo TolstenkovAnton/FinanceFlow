@@ -1,93 +1,114 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <title>Аналитика по категориям — Finance Flow</title>
-    <link rel="stylesheet" href="/static/style.css" />
-    <link rel="icon" type="image/png" href="/static/logo_Finance_Flow.png" sizes="32x32" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аналитика — Finance Flow</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/png" href="/static/logo_Finance_Flow.png" sizes="32x32">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 </head>
 <body>
-<header class="site-header">
-    <img src="/static/Finance_Flow.png" alt="Finance Flow" class="logo-header" />
-</header>
-
-<div class="container">
-    <h1>Аналитика по категориям</h1>
-
-    <form method="get" action="/analytics" class="currency-form">
-        <label for="currency">Выберите валюту:</label>
-        <select name="currency" id="currency">
-            <option value="RUB" {% if currency == "RUB" %}selected{% endif %}>RUB</option>
-            <option value="USD" {% if currency == "USD" %}selected{% endif %}>USD</option>
-            <option value="EUR" {% if currency == "EUR" %}selected{% endif %}>EUR</option>
-        </select>
-        <button type="submit">Применить</button>
-    </form>
-
-    <h2>Доходы по категориям</h2>
-    <canvas id="incomeChart" width="400" height="200"></canvas>
-
-    <h2>Расходы по категориям</h2>
-    <canvas id="expenseChart" width="400" height="200"></canvas>
-
-    <div style="text-align: center; margin-top: 20px;">
-        <a href="/data" class="back-button">❰ Вернуться к отчёту</a>
+<header class="app-header">
+    <img src="/static/Finance_Flow.png" alt="Finance Flow" class="app-logo">
+    <div class="app-header-right">
+        <span class="welcome-text">Добро пожаловать, <strong>{{ user.username }}</strong></span>
+        <a href="/logout" class="btn-blue">Выйти</a>
     </div>
-</div>
+</header>
+<main class="app-main">
+    <div class="analytics-wrapper">
+        <div class="analytics-sidebar">
+            <form method="get" action="/analytics">
+                <label class="currency-label">Выберите валюту</label>
+                <select class="field-select" name="currency" style="margin-bottom: 12px;">
+                    <option value="USD" {% if currency == "USD" %}selected{% endif %}>$ (USD)</option>
+                    <option value="RUB" {% if currency == "RUB" %}selected{% endif %}>₽ (RUB)</option>
+                    <option value="EUR" {% if currency == "EUR" %}selected{% endif %}>€ (EUR)</option>
+                </select>
+                <button type="submit" class="btn-apply">Применить</button>
+            </form>
+            <div class="categories-section">
+                <p class="categories-title">Категории</p>
+                <div id="legend-container"></div>
+            </div>
+        </div>
 
-<footer class="site-footer">
-    <p>&copy; 2025 Finance Flow. All rights reserved.</p>
-</footer>
+        <!-- Charts -->
+        <div class="charts-area">
+            <div class="chart-section">
+                <h2 class="chart-title">Доходы</h2>
+                <canvas id="incomeChart"></canvas>
+            </div>
+            <div class="chart-section">
+                <h2 class="chart-title">Расходы</h2>
+                <canvas id="expenseChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Right nav -->
+        <div class="analytics-nav">
+            <a href="/data" class="btn-outline">Вернуться к отчёту</a>
+        </div>
+    </div>
+</main>
 
 <script>
+    const COLORS = ['#0077FF', '#FF7043', '#66B2FF', '#FFA726', '#42A5F5', '#EF5350', '#26C6DA', '#AB47BC'];
+
     const incomeData = {{ income_categories | tojson }};
     const expenseData = {{ expense_categories | tojson }};
 
-    function createChart(ctx, data, title) {
-        return new Chart(ctx, {
+    function makeChartData(data) {
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+        const total = values.reduce((a, b) => a + b, 0);
+        return { labels, values, total };
+    }
+
+    function createChart(ctxId, data) {
+        const { labels, values, total } = makeChartData(data);
+        return new Chart(document.getElementById(ctxId), {
             type: 'pie',
             data: {
-                labels: Object.keys(data),
+                labels,
                 datasets: [{
-                    data: Object.values(data),
-                    backgroundColor: [
-                        '#00BFFF', '#3399FF', '#66B2FF', '#99CCFF',
-                        '#CCE5FF', '#0077FF', '#003366', '#0059b3',
-                        '#FF6384', '#FFA726'
-                    ],
-                    borderColor: '#000',
-                    borderWidth: 1
+                    data: values,
+                    backgroundColor: COLORS.slice(0, labels.length),
+                    borderWidth: 0,
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: 'white',
-                            font: { family: 'Montserrat' }
+                    legend: { display: false },
+                    datalabels: {
+                        color: '#fff',
+                        font: { family: 'Montserrat', size: 14, weight: '700' },
+                        formatter: (value, ctx) => {
+                            const pct = Math.round(value / total * 100);
+                            return pct + '% ' + ctx.chart.data.labels[ctx.dataIndex];
                         }
-                    },
-                    title: {
-                        display: true,
-                        text: title,
-                        color: 'white',
-                        font: { family: 'Montserrat', size: 18 }
                     }
                 }
-            }
+            },
+            plugins: [ChartDataLabels]
         });
     }
 
-    const incomeCtx = document.getElementById('incomeChart').getContext('2d');
-    createChart(incomeCtx, incomeData, 'Доходы по категориям');
+    createChart('incomeChart', incomeData);
+    createChart('expenseChart', expenseData);
 
-    const expenseCtx = document.getElementById('expenseChart').getContext('2d');
-    createChart(expenseCtx, expenseData, 'Расходы по категориям');
+    const allCategories = [...new Set([...Object.keys(incomeData), ...Object.keys(expenseData)])];
+    const container = document.getElementById('legend-container');
+    allCategories.forEach((cat, i) => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = `<div class="legend-dot" style="background:${COLORS[i % COLORS.length]}"></div><span>${cat}</span>`;
+        container.appendChild(item);
+    });
 </script>
-
 </body>
 </html>
