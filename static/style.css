@@ -166,23 +166,6 @@ a:hover { text-decoration: none; }
 
 .btn-blue:hover { background: #005fcc; color: #fff; }
 
-.btn-outline {
-    padding: 10px 22px;
-    background: transparent;
-    color: #fff;
-    border: 1.5px solid #fff;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    display: inline-block;
-    transition: background 0.2s;
-    white-space: nowrap;
-}
-
-.btn-outline:hover { background: rgba(255,255,255,0.1); color: #fff; }
-
 .btn-add {
     width: 100%;
     padding: 15px;
@@ -305,14 +288,6 @@ a:hover { text-decoration: none; }
     align-items: flex-start;
 }
 
-.index-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    flex-shrink: 0;
-    margin-left: auto;
-}
-
 .forms-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -338,13 +313,6 @@ a:hover { text-decoration: none; }
     gap: 60px;
     flex: 1;
     min-width: 0;
-}
-
-.data-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    flex-shrink: 0;
 }
 
 .report-title {
@@ -449,10 +417,6 @@ a:hover { text-decoration: none; }
     flex-shrink: 0;
 }
 
-.analytics-nav {
-    flex-shrink: 0;
-}
-
 .currency-label {
     font-size: 14px;
     font-weight: 700;
@@ -500,4 +464,106 @@ a:hover { text-decoration: none; }
     font-size: 26px;
     font-weight: 700;
     margin-bottom: 20px;
+}
+
+.app-header {
+    width: 100%;
+    background-color: #000000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+}
+
+.app-logo {
+    height: 44px;
+    width: auto;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-link {
+    position: relative;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 500;
+    font-size: 0.96rem;
+    transition:
+        color 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #0077FF;
+}
+
+.nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 0;
+    height: 2px;
+    background-color: #0077FF;
+    transition: width 0.25s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.welcome-text {
+    color: #4b5563;
+    font-size: 0.95rem;
+}
+
+.icon-link {
+    display: flex;
+    align-items: center;
+    color: #374151;
+    transition: opacity 0.2s ease;
+}
+
+.icon-link:hover {
+    opacity: 0.7;
+}
+
+.header-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.summary-title {
+    margin-top: 36px;
+}
+
+.transactions-spacing {
+    margin-top: 36px;
 }
