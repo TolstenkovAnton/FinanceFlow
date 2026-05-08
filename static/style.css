@@ -506,8 +506,9 @@ a:hover { text-decoration: none; }
 .nav-link {
     position: relative;
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.82);
-    font-weight: 500;
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
     font-size: 0.96rem;
     transition:
         color 0.2s ease,
@@ -566,4 +567,35 @@ a:hover { text-decoration: none; }
 
 .transactions-spacing {
     margin-top: 36px;
+}
+
+.profile-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+        transform 0.15s ease,
+        opacity 0.2s ease;
+    position: relative;
+    text-decoration: none;
+}
+
+.profile-link:hover {
+    opacity: 0.9;
+    transform: none;
+}
+
+.profile-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.profile-link:hover .profile-icon {
+    border-color: #0077FF;
 }
