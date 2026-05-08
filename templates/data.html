@@ -1,90 +1,93 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Финансовый отчёт — Finance Flow</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="icon" type="image/png" href="/static/logo_Finance_Flow.png" sizes="32x32">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
-</head>
-<body>
-<header class="app-header">
-    <a href="/">
-        <img src="/static/Finance_Flow.png" alt="Finance Flow" class="app-logo">
-    </a>
-    <div class="app-header-right">
-        <span class="welcome-text">Добро пожаловать, <strong>{{ user.username }}</strong></span>
-        <a href="/logout" class="btn-blue">Выйти</a>
-    </div>
-</header>
-<main class="app-main">
-    <div class="data-wrapper">
-        <div class="data-main">
-            <div>
-                <h1 class="report-title">Финансовый отчёт</h1>
-                <form method="get" action="/data">
-                    <label class="filter-label">Фильтр по месяцу (ГГГГ-ММ):</label>
-                    <input class="filter-input" type="text" name="month"
-                           placeholder="{{ month if month else '2026-01' }}"
-                           value="{{ month }}">
-                    <button type="submit" class="btn-apply">Применить</button>
-                </form>
+{% extends "base.html" %}
+{% block title %}
+Финансовый отчёт — Finance Flow
+{% endblock %}
+{% block content %}
+<div class="data-wrapper">
+    <div class="data-main">
+        <div>
+            <h1 class="report-title">
+                Финансовый отчёт
+            </h1>
+            <form method="get" action="/data">
+                <label class="filter-label">
+                    Фильтр по месяцу (ГГГГ-ММ):
+                </label>
+                <input
+                    class="filter-input"
+                    type="text"
+                    name="month"
+                    placeholder="{{ month if month else '2026-01' }}"
+                    value="{{ month }}"
+                >
+                <button type="submit" class="btn-apply">
+                    Применить
+                </button>
+            </form>
+            <h2 class="sub-title summary-title">
+                Сводная таблица
+            </h2>
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Валюта</th>
+                        <th>Доходы</th>
+                        <th>Расходы</th>
+                        <th>Баланс</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for currency in totals %}
+                    <tr>
+                        <td>{{ currency }}</td>
+                        <td>
+                            {{ totals[currency]['income'] }}
+                        </td>
+                        <td>
+                            {{ totals[currency]['expense'] }}
+                        </td>
+                        <td>
+                            {{ totals[currency]['balance'] }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <div class="transactions-block">
+                <h2 class="sub-title">
+                    Доходы
+                </h2>
+                <ul class="transaction-list">
+                    {% for income in incomes %}
+                    <li class="transaction-item">
 
-                <h2 class="sub-title" style="margin-top: 36px;">Сводная таблица</h2>
-                <table class="summary-table">
-                    <thead>
-                        <tr>
-                            <th>Валюта</th>
-                            <th>Доходы</th>
-                            <th>Расходы</th>
-                            <th>Баланс</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for currency in totals %}
-                        <tr>
-                            <td>{{ currency }}</td>
-                            <td>{{ totals[currency]['income'] }}</td>
-                            <td>{{ totals[currency]['expense'] }}</td>
-                            <td>{{ totals[currency]['balance'] }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        {{ income.description }}
+                        {{ income.amount }}
+                        {{ income.currency }}
+
+                        ({{ income.created_at.strftime('%y-%m-%d') }})
+                    </li>
+                    {% endfor %}
+                </ul>
             </div>
-
-            <div>
-                <div class="transactions-block">
-                    <h2 class="sub-title">Доходы</h2>
-                    <ul class="transaction-list">
-                        {% for income in incomes %}
-                        <li class="transaction-item">
-                            {{ income.description }} {{ income.amount }} {{ income.currency }}
-                            ({{ income.created_at.strftime('%y-%m-%d') }})
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div class="transactions-block" style="margin-top: 36px;">
-                    <h2 class="sub-title">Расходы</h2>
-                    <ul class="transaction-list">
-                        {% for expense in expenses %}
-                        <li class="transaction-item">
-                            {{ expense.description }} {{ expense.amount }} {{ expense.currency }}
-                            ({{ expense.created_at.strftime('%y-%m-%d') }})
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+            <div class="transactions-block transactions-spacing">
+                <h2 class="sub-title">
+                    Расходы
+                </h2>
+                <ul class="transaction-list">
+                    {% for expense in expenses %}
+                    <li class="transaction-item">
+                        {{ expense.description }}
+                        {{ expense.amount }}
+                        {{ expense.currency }}
+                        ({{ expense.created_at.strftime('%y-%m-%d') }})
+                    </li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
-
-        <div class="data-nav">
-            <a href="/" class="btn-outline">Вернуться к операциям</a>
-            <a href="/analytics" class="btn-outline">Аналитика по категориям</a>
-        </div>
     </div>
-</main>
-</body>
-</html>
+</div>
+{% endblock %}

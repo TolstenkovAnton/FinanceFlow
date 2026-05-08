@@ -1,73 +1,76 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Аналитика — Finance Flow</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="icon" type="image/png" href="/static/logo_Finance_Flow.png" sizes="32x32">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-</head>
-<body>
-<header class="app-header">
-    <a href="/">
-        <img src="/static/Finance_Flow.png" alt="Finance Flow" class="app-logo">
-    </a>
-    <div class="app-header-right">
-        <span class="welcome-text">Добро пожаловать, <strong>{{ user.username }}</strong></span>
-        <a href="/logout" class="btn-blue">Выйти</a>
-    </div>
-</header>
-<main class="app-main">
-    <div class="analytics-wrapper">
-        <div class="analytics-sidebar">
-            <form method="get" action="/analytics">
-                <label class="currency-label">Выберите валюту</label>
-                <select class="field-select" name="currency" style="margin-bottom: 12px;">
-                    <option value="USD" {% if currency == "USD" %}selected{% endif %}>$ (USD)</option>
-                    <option value="RUB" {% if currency == "RUB" %}selected{% endif %}>₽ (RUB)</option>
-                    <option value="EUR" {% if currency == "EUR" %}selected{% endif %}>€ (EUR)</option>
-                </select>
-                <button type="submit" class="btn-apply">Применить</button>
-            </form>
-            <div class="categories-section">
-                <p class="categories-title">Категории</p>
-                <div id="legend-container"></div>
-            </div>
-        </div>
-
-        <div class="charts-area">
-            <div class="chart-section">
-                <h2 class="chart-title">Доходы</h2>
-                <canvas id="incomeChart"></canvas>
-            </div>
-            <div class="chart-section">
-                <h2 class="chart-title">Расходы</h2>
-                <canvas id="expenseChart"></canvas>
-            </div>
-        </div>
-
-        <div class="analytics-nav">
-            <a href="/data" class="btn-outline">Вернуться к отчёту</a>
+{% extends "base.html" %}
+{% block title %}
+Аналитика — Finance Flow
+{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+{% endblock %}
+{% block content %}
+<div class="analytics-wrapper">
+    <div class="analytics-sidebar">
+        <form method="get" action="/analytics">
+            <label class="currency-label">
+                Выберите валюту
+            </label>
+            <select class="field-select currency-select" name="currency">
+                <option
+                    value="USD"
+                    {% if currency == "USD" %}selected{% endif %}
+                >
+                    $ (USD)
+                </option>
+                <option
+                    value="RUB"
+                    {% if currency == "RUB" %}selected{% endif %}
+                >
+                    ₽ (RUB)
+                </option>
+                <option
+                    value="EUR"
+                    {% if currency == "EUR" %}selected{% endif %}
+                >
+                    € (EUR)
+                </option>
+            </select>
+            <button type="submit" class="btn-apply">
+                Применить
+            </button>
+        </form>
+        <div class="categories-section">
+            <p class="categories-title">
+                Категории
+            </p>
+            <div id="legend-container"></div>
         </div>
     </div>
-</main>
-
+    <div class="charts-area">
+        <div class="chart-section">
+            <h2 class="chart-title">
+                Доходы
+            </h2>
+            <canvas id="incomeChart"></canvas>
+        </div>
+        <div class="chart-section">
+            <h2 class="chart-title">
+                Расходы
+            </h2>
+            <canvas id="expenseChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
 <script>
     const COLORS = ['#0077FF', '#FF7043', '#66B2FF', '#FFA726', '#42A5F5', '#EF5350', '#26C6DA', '#AB47BC'];
-
     const incomeData = {{ income_categories | tojson }};
     const expenseData = {{ expense_categories | tojson }};
-
     function makeChartData(data) {
         const labels = Object.keys(data);
         const values = Object.values(data);
         const total = values.reduce((a, b) => a + b, 0);
         return { labels, values, total };
     }
-
     function createChart(ctxId, data) {
         const { labels, values, total } = makeChartData(data);
         return new Chart(document.getElementById(ctxId), {
@@ -83,13 +86,21 @@
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { display: false },
+                    legend: {
+                        display: false
+                    },
                     datalabels: {
                         color: '#fff',
-                        font: { family: 'Montserrat', size: 14, weight: '700' },
+                        font: {
+                            family: 'Montserrat',
+                            size: 14,
+                            weight: '700'
+                        },
                         formatter: (value, ctx) => {
-                            const pct = Math.round(value / total * 100);
-                            return pct + '% ' + ctx.chart.data.labels[ctx.dataIndex];
+                            const pct =
+                                Math.round(value / total * 100);
+                            return pct + '% ' +
+                                ctx.chart.data.labels[ctx.dataIndex];
                         }
                     }
                 }
@@ -97,18 +108,28 @@
             plugins: [ChartDataLabels]
         });
     }
-
     createChart('incomeChart', incomeData);
     createChart('expenseChart', expenseData);
-
-    const allCategories = [...new Set([...Object.keys(incomeData), ...Object.keys(expenseData)])];
-    const container = document.getElementById('legend-container');
+    const allCategories = [
+        ...new Set([
+            ...Object.keys(incomeData),
+            ...Object.keys(expenseData)
+        ])
+    ];
+    const container =
+        document.getElementById('legend-container');
     allCategories.forEach((cat, i) => {
         const item = document.createElement('div');
         item.className = 'legend-item';
-        item.innerHTML = `<div class="legend-dot" style="background:${COLORS[i % COLORS.length]}"></div><span>${cat}</span>`;
+        item.innerHTML = `
+            <div
+                class="legend-dot"
+                style="background:${COLORS[i % COLORS.length]}"
+            ></div>
+
+            <span>${cat}</span>
+        `;
         container.appendChild(item);
     });
 </script>
-</body>
-</html>
+{% endblock %}
