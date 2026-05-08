@@ -45,9 +45,9 @@
                         {% for currency in totals %}
                         <tr>
                             <td>{{ currency }}</td>
-                            <td>{{ "{:g}".format(totals[currency]['income']) }}</td>
-                            <td>{{ "{:g}".format(totals[currency]['expense']) }}</td>
-                            <td>{{ "{:g}".format(totals[currency]['balance']) }}</td>
+                            <td>{{ totals[currency]['income'] }}</td>
+                            <td>{{ totals[currency]['expense'] }}</td>
+                            <td>{{ totals[currency]['balance'] }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
