@@ -1,22 +1,12 @@
 <header class="app-header">
     <div class="header-left">
         <a href="/" class="logo-link">
-            <img
-                src="{{ url_for('static', path='Finance_Flow.png') }}"
-                alt="Finance Flow"
-                class="app-logo"
-            >
+            <img src="{{ url_for('static', path='Finance_Flow.png') }}" alt="Finance Flow" class="app-logo">
         </a>
         <nav class="main-nav">
-            <a href="/" class="nav-link">
-                Главная
-            </a>
-            <a href="/data" class="nav-link">
-                Отчёт
-            </a>
-            <a href="/analytics" class="nav-link">
-                Аналитика
-            </a>
+            <a href="/" class="nav-link">Главная</a>
+            <a href="/data" class="nav-link">Отчёт</a>
+            <a href="/analytics" class="nav-link">Аналитика</a>
         </nav>
     </div>
     <div class="header-right">
@@ -24,6 +14,9 @@
             Добро пожаловать,
             <strong>{{ user.username }}</strong>
         </span>
+        <a href="/" class="profile-link" title="Личный кабинет">
+            <img src="{{ url_for('static', path='profile_icon.png') }}" alt="profile" class="profile-icon">
+        </a>
         <a href="/logout" class="btn-blue">
             Выйти
         </a>
