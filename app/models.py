@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, text, func
+from sqlalchemy import Column, Integer, String, Text, Float, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 from db_engine import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -12,6 +13,7 @@ class User(Base):
     incomes = relationship("Income", back_populates="user")
     expenses = relationship("Expense", back_populates="user")
 
+
 class Income(Base):
     __tablename__ = "incomes"
     id = Column(Integer, primary_key=True, index=True)
@@ -22,6 +24,7 @@ class Income(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship("User", back_populates="incomes")
 
+
 class Expense(Base):
     __tablename__ = "expenses"
     id = Column(Integer, primary_key=True, index=True)
@@ -31,3 +34,12 @@ class Expense(Base):
     currency = Column(String, default="RUB")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship("User", back_populates="expenses")
+
+
+class UserToken(Base):
+    __tablename__ = "user_tokens"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    access_token = Column(Text, nullable=False, index=True)
+    refresh_token = Column(Text, nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
