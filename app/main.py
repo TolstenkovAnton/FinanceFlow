@@ -68,6 +68,7 @@ async def register(
     password: str = Form(...),
     db: AsyncSession = Depends(get_db),
 ):
+    username = username.strip()
     user = await crud.create_user(db, username, email, password)
     if user:
         return RedirectResponse("/login", status_code=302)
@@ -86,6 +87,7 @@ async def login(
     password: str = Form(...),
     db: AsyncSession = Depends(get_db),
 ):
+    username = username.strip()
     user = await crud.authenticate_user(db, username, password)
     if not user:
         return templates.TemplateResponse(request, "login.html", {"error": "Неверные данные"})
@@ -177,6 +179,72 @@ async def show_data(request: Request, month: str = "", db: AsyncSession = Depend
             "totals": totals,
         },
     )
+    if new_tokens:
+        set_auth_cookies(response, new_tokens)
+    return response
+
+
+MONTH_NAMES_RU = {
+    1: "Январь", 2: "Февраль", 3: "Март", 4: "Апрель",
+    5: "Май", 6: "Июнь", 7: "Июль", 8: "Август",
+    9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь",
+}
+
+
+@app.get("/profile")
+async def profile(request: Request, db: AsyncSession = Depends(get_db)):
+    user, new_tokens = await get_user(request, db)
+    if not user:
+        return RedirectResponse("/login")
+    current_month = datetime.now().strftime("%Y-%m")
+    incomes, expenses = await crud.get_user_data(db, user.id, current_month)
+
+    totals: Dict[str, Dict[str, float]] = {}
+    for income in incomes:
+        cur = income.currency
+        totals.setdefault(cur, {"income": 0.0, "expense": 0.0, "balance": 0.0})
+        totals[cur]["income"] += float(income.amount)
+    for expense in expenses:
+        cur = expense.currency
+        totals.setdefault(cur, {"income": 0.0, "expense": 0.0, "balance": 0.0})
+        totals[cur]["expense"] += float(expense.amount)
+    for cur in totals:
+        totals[cur]["balance"] = totals[cur]["income"] - totals[cur]["expense"]
+
+    total_expenses_rub = totals.get("RUB", {}).get("expense", 0.0)
+    limit = float(user.monthly_limit) if user.monthly_limit else 0.0
+    spent_percent = min(round(total_expenses_rub / limit * 100) if limit > 0 else 0, 100)
+
+    response = templates.TemplateResponse(
+        request,
+        "profile.html",
+        {
+            "user": user,
+            "total_expenses_rub": total_expenses_rub,
+            "spent_percent": spent_percent,
+            "success": request.query_params.get("success"),
+            "totals": totals,
+            "month_name": MONTH_NAMES_RU[datetime.now().month],
+            "income_count": len(incomes),
+            "expense_count": len(expenses),
+        },
+    )
+    if new_tokens:
+        set_auth_cookies(response, new_tokens)
+    return response
+
+
+@app.post("/profile/limit")
+async def update_limit(
+    request: Request,
+    monthly_limit: float = Form(...),
+    db: AsyncSession = Depends(get_db),
+):
+    user, new_tokens = await get_user(request, db)
+    if not user:
+        return RedirectResponse("/login", status_code=302)
+    await crud.update_monthly_limit(db, user.id, monthly_limit)
+    response = RedirectResponse("/profile?success=1", status_code=302)
     if new_tokens:
         set_auth_cookies(response, new_tokens)
     return response
