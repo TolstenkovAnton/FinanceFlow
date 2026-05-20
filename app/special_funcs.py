@@ -43,10 +43,7 @@ def convert_all_to_currency(transactions, target_currency):
         amount = t_copy["amount"]
         from_currency = t_copy["currency"]
         if from_currency != target_currency:
-            try:
-                amount = c.convert(amount, from_currency, target_currency)
-            except:
-                pass
+            amount = c.convert(amount, from_currency, target_currency)
         t_copy["amount"] = round(amount, 2)
         t_copy["currency"] = target_currency
         result.append(t_copy)

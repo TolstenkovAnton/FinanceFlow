@@ -210,7 +210,7 @@ async def show_data(request: Request, month: str = "", db: AsyncSession = Depend
     incomes_dict = [i.__dict__ for i in incomes] if incomes else []
     expenses_dict = [e.__dict__ for e in expenses] if expenses else []
 
-    current_month = month or datetime.now().strftime("%Y-%m")
+    # current_month = month or datetime.now().strftime("%Y-%m")
     totals: Dict[str, Dict[str, float]] = {}
 
     for income in incomes_dict:
