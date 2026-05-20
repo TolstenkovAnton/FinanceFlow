@@ -34,7 +34,7 @@ def categorize_transactions(transactions):
 
     return categories
 
-c = CurrencyConverter()
+c = CurrencyConverter(fallback_on_wrong_date=True)
 
 def convert_all_to_currency(transactions, target_currency):
     result = []
