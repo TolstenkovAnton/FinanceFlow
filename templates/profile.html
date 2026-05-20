@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет — Finance Flow{% endblock %}
+{% block content %}
+<div class="profile-wrapper">
+    <div class="profile-hero">
+        <img
+            src="{{ url_for('static', path='profile_icon.png') }}"
+            alt="avatar"
+            class="profile-avatar"
+        >
+        <div class="profile-hero-info">
+            <h1 class="profile-username">{{ user.username }}</h1>
+            <span class="profile-email">{{ user.email }}</span>
+        </div>
+    </div>
+    <div class="profile-grid">
+        <div class="profile-card">
+            <h2 class="profile-card-title">Информация об аккаунте</h2>
+            <div class="profile-info-row">
+                <span class="profile-info-label"><strong>Имя пользователя:</strong> {{ user.username }}</span>
+            </div>
+            <div class="profile-info-row">
+                <span class="profile-info-label"><strong>Email:</strong> {{ user.email }}</span>
+            </div>
+            <div class="profile-info-row">
+                <span class="profile-info-label"><strong>Текущий лимит (₽):</strong> {{ user.monthly_limit }}</span>
+                    {% if user.monthly_limit and user.monthly_limit > 0 %}
+                        {{ "%.2f"|format(user.monthly_limit) }} ₽
+                    {% else %}
+                        Не установлен
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        <div class="profile-card">
+            <h2 class="profile-card-title">Лимит расходов на месяц</h2>
+            {% if user.monthly_limit and user.monthly_limit > 0 %}
+            <div class="profile-limit-block">
+                <div class="profile-limit-meta">
+                    <span class="profile-limit-spent">Потрачено: <strong>{{ "%.2f"|format(total_expenses_rub) }} ₽</strong></span>
+                    <span class="profile-limit-max">Лимит: <strong>{{ "%.2f"|format(user.monthly_limit) }} ₽</strong></span>
+                </div>
+                <div class="profile-progress-bar">
+                    <div
+                        class="profile-progress-fill {% if spent_percent >= 90 %}profile-progress-danger{% elif spent_percent >= 70 %}profile-progress-warn{% endif %}"
+                        style="width: {{ spent_percent }}%"
+                    ></div>
+                </div>
+                <span class="profile-progress-label">{{ spent_percent }}% от лимита использовано в этом месяце</span>
+            </div>
+            {% endif %}
+            {% if success %}
+            <p class="profile-success">Лимит успешно обновлён</p>
+            {% endif %}
+            <form method="post" action="/profile/limit" class="profile-limit-form">
+                <div class="field-group">
+                    <label class="field-label">Новый лимит (₽)</label>
+                    <input
+                        class="field-input"
+                        type="number"
+                        name="monthly_limit"
+                        min="0"
+                        step="100"
+                        placeholder="Например, 50000"
+                        value="{% if user.monthly_limit and user.monthly_limit > 0 %}{{ user.monthly_limit|int }}{% endif %}"
+                        required
+                    >
+                </div>
+                <button type="submit" class="btn-add">Сохранить лимит</button>
+            </form>
+        </div>
+        <div class="profile-card">
+            <h2 class="profile-card-title">Статистика за {{ month_name }}</h2>
+            {% if totals %}
+            <div class="profile-stats-grid">
+                {% set currency_symbols = {"RUB": "₽", "USD": "$", "EUR": "€"} %}
+                {% for cur, data in totals.items() %}
+                <div class="profile-stat-block">
+                    <span class="profile-stat-currency">{{ currency_symbols.get(cur, cur) }} {{ cur }}</span>
+                    <div class="profile-stat-rows">
+                        <div class="profile-stat-row">
+                            <span class="profile-stat-label">Доходы</span>
+                            <span class="profile-stat-value profile-stat-income">+{{ "%.2f"|format(data.income) }}</span>
+                        </div>
+                        <div class="profile-stat-row">
+                            <span class="profile-stat-label">Расходы</span>
+                            <span class="profile-stat-value profile-stat-expense">−{{ "%.2f"|format(data.expense) }}</span>
+                        </div>
+                        <div class="profile-stat-divider"></div>
+                        <div class="profile-stat-row">
+                            <span class="profile-stat-label">Баланс</span>
+                            <span class="profile-stat-value {% if data.balance >= 0 %}profile-stat-income{% else %}profile-stat-expense{% endif %}">
+                                {{ "%.2f"|format(data.balance) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="profile-stat-block profile-stat-block--count">
+                    <span class="profile-stat-currency">Транзакции</span>
+                    <div class="profile-stat-rows">
+                        <div class="profile-stat-row">
+                            <span class="profile-stat-label">Доходов</span>
+                            <span class="profile-stat-value">{{ income_count }}</span>
+                        </div>
+                        <div class="profile-stat-row">
+                            <span class="profile-stat-label">Расходов</span>
+                            <span class="profile-stat-value">{{ expense_count }}</span>
+                        </div>
+                        <div class="profile-stat-divider"></div>
+                        <div class="profile-stat-row">
+                            <span class="profile-stat-label">Итого</span>
+                            <span class="profile-stat-value">{{ income_count + expense_count }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="profile-stats-empty">В этом месяце транзакций пока нет.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
