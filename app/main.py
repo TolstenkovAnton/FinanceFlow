@@ -1,9 +1,11 @@
+import io
+import openpyxl
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Tuple
-from fastapi import Depends, FastAPI, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi import Depends, FastAPI, Form, Request, UploadFile, File
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -103,6 +105,62 @@ async def logout(request: Request, db: AsyncSession = Depends(get_db)):
     response = RedirectResponse("/login")
     delete_auth_cookies(response)
     return response
+
+
+@app.post("/import")
+async def import_excel(
+    request: Request,
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+):
+    user, new_tokens = await get_user(request, db)
+    if not user:
+        return JSONResponse({"success": False, "error": "Не авторизован"}, status_code=401)
+    if not file.filename.endswith((".xlsx", ".xls")):
+        return JSONResponse({"success": False, "error": "Поддерживаются только файлы .xlsx / .xls"})
+    try:
+        content = await file.read()
+        wb = openpyxl.load_workbook(io.BytesIO(content), data_only=True)
+        ws = wb.active
+        imported = 0
+        skipped = []
+        for i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+            if not row or not any(cell is not None for cell in row):
+                continue
+            if len(row) < 3:
+                skipped.append(f"строка {i}: мало столбцов")
+                continue
+            type_val = str(row[0]).strip().lower() if row[0] is not None else ""
+            description = str(row[1]).strip() if row[1] is not None else ""
+            amount_raw = row[2]
+            currency = str(row[3]).strip().upper() if len(row) > 3 and row[3] else "RUB"
+            if currency not in ("RUB", "USD", "EUR"):
+                currency = "RUB"
+            try:
+                amount = float(amount_raw)
+            except (ValueError, TypeError):
+                skipped.append(f"строка {i}: некорректная сумма")
+                continue
+            if not description:
+                skipped.append(f"строка {i}: пустое описание")
+                continue
+            if type_val in ("доход", "income", "доходы"):
+                await crud.add_income(db, user.id, description, amount, currency)
+                imported += 1
+            elif type_val in ("расход", "expense", "расходы"):
+                await crud.add_expense(db, user.id, description, amount, currency)
+                imported += 1
+            else:
+                skipped.append(f"строка {i}: неизвестный тип «{row[0]}»")
+        response_data: Dict = {"success": True, "imported": imported}
+        if skipped:
+            response_data["skipped"] = skipped
+        resp = JSONResponse(response_data)
+        if new_tokens:
+            set_auth_cookies(resp, new_tokens)
+        return resp
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=400)
 
 
 @app.post("/add-income")
