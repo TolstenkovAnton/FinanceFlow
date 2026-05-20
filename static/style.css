@@ -149,7 +149,7 @@ a:hover { text-decoration: none; }
 }
 
 .btn-white:hover {
-    border-color: #0077FF
+    border-color: #0077FF;
 }
 
 .btn-blue {
@@ -170,20 +170,22 @@ a:hover { text-decoration: none; }
 
 .btn-add {
     width: 100%;
-    padding: 15px;
-    background: #0077FF;
-    color: #fff;
-    border: none;
+    padding: 16px;
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 700;
     cursor: pointer;
     font-family: 'Montserrat', sans-serif;
     transition: background 0.2s;
-    margin-top: 10px;
+    margin-top: 6px;
 }
 
-.btn-add:hover { background: #005fcc; }
+.btn-add:hover {
+    border-color: #0077FF
+}
 
 .btn-apply {
     width: 100%;
