@@ -1,120 +1,135 @@
 {% extends "base.html" %}
-{% block title %}
-Finance Flow
-{% endblock %}
+{% block title %}Finance Flow{% endblock %}
 {% block content %}
-<div class="index-wrapper">
-    <div class="forms-grid">
-        <div>
-            <h2 class="section-title">
-                Добавить доход
-            </h2>
+<div class="index-layout">
+    <div class="forms-section">
+        <div class="profile-card">
+            <h2 class="profile-card-title">Добавить доход</h2>
             <form method="post" action="/add-income">
                 <div class="field-group">
-                    <label class="field-label">
-                        Описание
-                    </label>
-                    <input
-                        class="field-input"
-                        type="text"
-                        name="description"
-                        required
-                    >
+                    <label class="field-label">Описание</label>
+                    <input class="field-input" type="text" name="description" placeholder="Например, зарплата" required>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">
-                        Сумма
-                    </label>
-                    <input
-                        class="field-input"
-                        type="number"
-                        step="1"
-                        name="amount"
-                        required
-                    >
+                    <label class="field-label">Сумма</label>
+                    <input class="field-input" type="number" step="0.01" min="0" name="amount" placeholder="0.00" required>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">
-                        Валюта
-                    </label>
-                    <select
-                        class="field-select"
-                        name="currency"
-                        required
-                    >
-                        <option value="RUB">
-                            ₽ RUB
-                        </option>
-
-                        <option value="EUR">
-                            € EUR
-                        </option>
-
-                        <option value="USD">
-                            $ USD
-                        </option>
+                    <label class="field-label">Валюта</label>
+                    <select class="field-select" name="currency" required>
+                        <option value="RUB">₽ RUB</option>
+                        <option value="USD">$ USD</option>
+                        <option value="EUR">€ EUR</option>
                     </select>
                 </div>
-                <button type="submit" class="btn-add">
-                    Добавить
-                </button>
+                <button type="submit" class="btn-add">Добавить доход</button>
             </form>
         </div>
-        <div>
-            <h2 class="section-title">
-                Добавить расход
-            </h2>
+        <div class="profile-card">
+            <h2 class="profile-card-title">Добавить расход</h2>
             <form method="post" action="/add-expense">
                 <div class="field-group">
-                    <label class="field-label">
-                        Описание
-                    </label>
-                    <input
-                        class="field-input"
-                        type="text"
-                        name="description"
-                        required
-                    >
+                    <label class="field-label">Описание</label>
+                    <input class="field-input" type="text" name="description" placeholder="Например, аренда" required>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">
-                        Сумма
-                    </label>
-                    <input
-                        class="field-input"
-                        type="number"
-                        step="1"
-                        name="amount"
-                        required
-                    >
+                    <label class="field-label">Сумма</label>
+                    <input class="field-input" type="number" step="0.01" min="0" name="amount" placeholder="0.00" required>
                 </div>
                 <div class="field-group">
-                    <label class="field-label">
-                        Валюта
-                    </label>
-                    <select
-                        class="field-select"
-                        name="currency"
-                        required
-                    >
-                        <option value="RUB">
-                            ₽ RUB
-                        </option>
-
-                        <option value="EUR">
-                            € EUR
-                        </option>
-
-                        <option value="USD">
-                            $ USD
-                        </option>
+                    <label class="field-label">Валюта</label>
+                    <select class="field-select" name="currency" required>
+                        <option value="RUB">₽ RUB</option>
+                        <option value="USD">$ USD</option>
+                        <option value="EUR">€ EUR</option>
                     </select>
                 </div>
-                <button type="submit" class="btn-add">
-                    Добавить
-                </button>
+                <button type="submit" class="btn-add">Добавить расход</button>
             </form>
         </div>
     </div>
+    <div class="profile-card import-card">
+        <h2 class="profile-card-title">Импорт из Excel</h2>
+        <div class="drop-zone" id="drop-zone">
+            <svg class="drop-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="8" width="36" height="32" rx="4" stroke="currentColor" stroke-width="2.2"/>
+                <path d="M16 20 L24 12 L32 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="24" y1="12" x2="24" y2="32" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                <line x1="16" y1="36" x2="32" y2="36" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+            <p class="drop-text">Перетащите .xlsx файл сюда</p>
+            <p class="drop-sub">или <span class="drop-link" id="drop-link">выберите файл</span></p>
+            <input type="file" id="excel-file" accept=".xlsx,.xls" hidden>
+        </div>
+        <div class="import-status" id="import-status"></div>
+        <div class="import-format">
+            <p class="import-format-title">Ожидаемый формат файла:</p>
+            <div class="import-format-table">
+                <div class="import-format-row import-format-header">
+                    <span>тип</span><span>описание</span><span>сумма</span><span>валюта</span>
+                </div>
+                <div class="import-format-row">
+                    <span class="fmt-income">доход</span><span>Зарплата</span><span>50000</span><span>RUB</span>
+                </div>
+                <div class="import-format-row">
+                    <span class="fmt-expense">расход</span><span>Аренда</span><span>15000</span><span>RUB</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+<script>
+(function () {
+    const dropZone  = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('excel-file');
+    const dropLink  = document.getElementById('drop-link');
+    const statusEl  = document.getElementById('import-status');
+    dropLink.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('click', (e) => {
+        if (e.target !== dropLink) fileInput.click();
+    });
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drop-zone--over');
+    });
+    ['dragleave', 'dragend'].forEach(ev =>
+        dropZone.addEventListener(ev, () => dropZone.classList.remove('drop-zone--over'))
+    );
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drop-zone--over');
+        const file = e.dataTransfer.files[0];
+        if (file) handleFile(file);
+    });
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    });
+    function handleFile(file) {
+        if (!file.name.match(/\.xlsx?$/i)) {
+            setStatus('error', 'Поддерживаются только файлы .xlsx / .xls');
+            return;
+        }
+        setStatus('loading', `Загрузка «${file.name}»…`);
+        const fd = new FormData();
+        fd.append('file', file);
+        fetch('/import', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    let msg = `Импортировано записей: ${data.imported}`;
+                    if (data.skipped && data.skipped.length)
+                        msg += `<br><span class="import-skipped">Пропущено: ${data.skipped.join('; ')}</span>`;
+                    setStatus('success', msg);
+                } else {
+                    setStatus('error', data.error || 'Неизвестная ошибка');
+                }
+            })
+            .catch(() => setStatus('error', 'Ошибка сети при загрузке файла'));
+    }
+    function setStatus(type, html) {
+        statusEl.innerHTML = html;
+        statusEl.className = 'import-status import-status--' + type;
+    }
+})();
+</script>
 {% endblock %}
