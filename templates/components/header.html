@@ -14,7 +14,7 @@
             Добро пожаловать,
             <strong>{{ user.username }}</strong>!
         </span>
-        <a href="/" class="profile-link" title="Личный кабинет">
+        <a href="/profile" class="profile-link" title="Личный кабинет">
             <img src="{{ url_for('static', path='profile_icon.png') }}" alt="profile" class="profile-icon">
         </a>
         <a href="/logout" class="quit">
