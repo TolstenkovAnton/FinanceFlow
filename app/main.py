@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
 from app import auth, crud, special_funcs
-from db_engine import get_db, init_db
+from app.db_engine import get_db, init_db
 
 
 @asynccontextmanager
