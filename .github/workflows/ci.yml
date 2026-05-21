@@ -56,5 +56,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/bmi-api:latest
-            ${{ secrets.DOCKER_USERNAME }}/bmi-api:${{ env.VERSION }}
+            ${{ secrets.DOCKER_USERNAME }}/finance-flow:latest
+            ${{ secrets.DOCKER_USERNAME }}/finance-flow:${{ env.VERSION }}
