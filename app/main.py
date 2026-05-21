@@ -242,13 +242,6 @@ async def show_data(request: Request, month: str = "", db: AsyncSession = Depend
     return response
 
 
-MONTH_NAMES_RU = {
-    1: "Январь", 2: "Февраль", 3: "Март", 4: "Апрель",
-    5: "Май", 6: "Июнь", 7: "Июль", 8: "Август",
-    9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь",
-}
-
-
 @app.get("/profile")
 async def profile(request: Request, db: AsyncSession = Depends(get_db)):
     user, new_tokens = await get_user(request, db)
@@ -273,6 +266,12 @@ async def profile(request: Request, db: AsyncSession = Depends(get_db)):
     limit = float(user.monthly_limit) if user.monthly_limit else 0.0
     spent_percent = min(round(total_expenses_rub / limit * 100) if limit > 0 else 0, 100)
 
+    months_ru_dict = {
+        1: "Январь", 2: "Февраль", 3: "Март", 4: "Апрель",
+        5: "Май", 6: "Июнь", 7: "Июль", 8: "Август",
+        9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь",
+    }
+
     response = templates.TemplateResponse(
         request,
         "profile.html",
@@ -282,7 +281,7 @@ async def profile(request: Request, db: AsyncSession = Depends(get_db)):
             "spent_percent": spent_percent,
             "success": request.query_params.get("success"),
             "totals": totals,
-            "month_name": MONTH_NAMES_RU[datetime.now().month],
+            "month_name": months_ru_dict[datetime.now().month],
             "income_count": len(incomes),
             "expense_count": len(expenses),
         },
