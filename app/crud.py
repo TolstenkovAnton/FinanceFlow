@@ -67,6 +67,13 @@ async def get_user_data(
         stmt_expenses = stmt_expenses.where(
             func.extract("year", Expense.created_at) == int(year)
         )
+    elif month:
+        stmt_incomes = stmt_incomes.where(
+            func.extract("month", Income.created_at) == int(month)
+        )
+        stmt_expenses = stmt_expenses.where(
+            func.extract("month", Expense.created_at) == int(month)
+        )
 
     result_incomes = await db.execute(stmt_incomes)
     result_expenses = await db.execute(stmt_expenses)

@@ -28,19 +28,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 COOKIE_ACCESS = "access_token"
 COOKIE_REFRESH = "refresh_token"
 
-MONTH_NAMES_RU = {
-    1: "Январь", 2: "Февраль", 3: "Март", 4: "Апрель",
-    5: "Май", 6: "Июнь", 7: "Июль", 8: "Август",
-    9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь",
-}
-
-MONTHS_RU = [
-    ("01", "Январь"), ("02", "Февраль"), ("03", "Март"),
-    ("04", "Апрель"), ("05", "Май"), ("06", "Июнь"),
-    ("07", "Июль"), ("08", "Август"), ("09", "Сентябрь"),
-    ("10", "Октябрь"), ("11", "Ноябрь"), ("12", "Декабрь"),
-]
-
 
 def set_auth_cookies(response: Response, tokens: Dict[str, str]) -> None:
     response.set_cookie(COOKIE_ACCESS, tokens["access_token"], httponly=True, samesite="lax")
@@ -268,7 +255,14 @@ async def show_data(
         totals[cur]["balance"] = totals[cur]["income"] - totals[cur]["expense"]
 
     current_year = datetime.now().year
-    years = list(range(2020, current_year + 2))
+    years = list(range(current_year, current_year + 3))
+
+    months_ru_tuple = [
+        ("01", "Январь"), ("02", "Февраль"), ("03", "Март"),
+        ("04", "Апрель"), ("05", "Май"), ("06", "Июнь"),
+        ("07", "Июль"), ("08", "Август"), ("09", "Сентябрь"),
+        ("10", "Октябрь"), ("11", "Ноябрь"), ("12", "Декабрь"),
+    ]
 
     response = templates.TemplateResponse(
         request,
@@ -282,7 +276,7 @@ async def show_data(
             "date": date,
             "export_period": export_period,
             "years": years,
-            "months_ru": MONTHS_RU,
+            "months_ru": months_ru_tuple,
         },
     )
     if new_tokens:
@@ -381,7 +375,11 @@ async def profile(request: Request, db: AsyncSession = Depends(get_db)):
     limit = float(user.monthly_limit) if user.monthly_limit else 0.0
     spent_percent = min(round(total_expenses_rub / limit * 100) if limit > 0 else 0, 100)
 
-
+    months_ru_dict = {
+        1: "Январь", 2: "Февраль", 3: "Март", 4: "Апрель",
+        5: "Май", 6: "Июнь", 7: "Июль", 8: "Август",
+        9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь",
+    }
 
     response = templates.TemplateResponse(
         request,
@@ -392,7 +390,7 @@ async def profile(request: Request, db: AsyncSession = Depends(get_db)):
             "spent_percent": spent_percent,
             "success": request.query_params.get("success"),
             "totals": totals,
-            "month_name": MONTH_NAMES_RU[datetime.now().month],
+            "month_name": months_ru_dict[datetime.now().month],
             "income_count": len(incomes),
             "expense_count": len(expenses),
         },
