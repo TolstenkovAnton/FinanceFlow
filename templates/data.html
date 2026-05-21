@@ -1,93 +1,124 @@
 {% extends "base.html" %}
-{% block title %}
-Финансовый отчёт — Finance Flow
-{% endblock %}
+{% block title %}Финансовый отчёт — Finance Flow{% endblock %}
 {% block content %}
-<div class="data-wrapper">
-    <div class="data-main">
-        <div>
-            <h1 class="report-title">
-                Финансовый отчёт
-            </h1>
-            <form method="get" action="/data">
-                <label class="filter-label">
-                    Фильтр по месяцу (ГГГГ-ММ):
-                </label>
-                <input
-                    class="filter-input"
-                    type="text"
-                    name="month"
-                    placeholder="{{ month if month else '2026-01' }}"
-                    value="{{ month }}"
-                >
-                <button type="submit" class="btn-apply">
-                    Применить
-                </button>
-            </form>
-            <h2 class="sub-title summary-title">
-                Сводная таблица
-            </h2>
-            <table class="summary-table">
+<div class="data-layout">
+    <div class="data-header">
+        <h1 class="report-title">Финансовый отчёт</h1>
+        <a href="/data/export?date={{ export_period }}" class="btn-export">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.2"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Экспорт в Excel
+        </a>
+    </div>
+    <div class="profile-card filter-card">
+        <form method="get" action="/data" class="filter-bar">
+            <div class="filter-group">
+                <label class="filter-label">Год</label>
+                <select name="year" class="field-select filter-select">
+                    <option value="">Все годы</option>
+                    {% for y in years %}
+                    <option value="{{ y }}"
+                        {% if year == y|string %}selected{% endif %}>
+                        {{ y }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Месяц</label>
+                <select name="month_num" class="field-select filter-select">
+                    <option value="">Все месяцы</option>
+                    {% for num, name in months_ru %}
+                    <option value="{{ num }}"
+                        {% if month_num == num %}selected{% endif %}>
+                        {{ name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn-apply filter-btn">Применить</button>
+                <a href="/data" class="btn-clear">Сбросить</a>
+            </div>
+        </form>
+    </div>
+    {% if totals %}
+    <div class="summary-strip">
+        {% for currency, data in totals.items() %}
+        <div class="summary-chip">
+            <span class="summary-chip-currency">{{ currency }}</span>
+            <span class="summary-chip-income">
+                +{{ "%.2f"|format(data.income) }}
+            </span>
+            <span class="summary-chip-divider">·</span>
+            <span class="summary-chip-expense">
+                −{{ "%.2f"|format(data.expense) }}
+            </span>
+            <span class="summary-chip-divider">·</span>
+            <span class="summary-chip-balance
+                {% if data.balance >= 0 %}summary-chip-balance--pos{% else %}summary-chip-balance--neg{% endif %}">
+                = {{ "%.2f"|format(data.balance) }}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="profile-card tx-card">
+        <div class="tx-card-header">
+            <span class="profile-card-title" style="margin:0">Транзакции</span>
+            <span class="tx-count">
+                {% if transactions %}
+                    {{ transactions|length }} запис{{ "ь" if transactions|length == 1
+                        else ("и" if transactions|length in [2,3,4] else "ей") }}
+                {% else %}
+                    Нет записей
+                {% endif %}
+            </span>
+        </div>
+        {% if transactions %}
+        <div class="tx-table-wrap">
+            <table class="tx-table">
                 <thead>
                     <tr>
+                        <th>Дата</th>
+                        <th>Описание</th>
+                        <th>Тип</th>
+                        <th class="tx-th-num">Сумма</th>
                         <th>Валюта</th>
-                        <th>Доходы</th>
-                        <th>Расходы</th>
-                        <th>Баланс</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for currency in totals %}
+                    {% for t in transactions %}
                     <tr>
-                        <td>{{ currency }}</td>
-                        <td>
-                            {{ totals[currency]['income'] }}
+                        <td class="tx-date">
+                            {{ t.date.strftime('%d.%m.%Y') if t.date else '—' }}
                         </td>
+                        <td class="tx-desc">{{ t.description }}</td>
                         <td>
-                            {{ totals[currency]['expense'] }}
+                            <span class="tx-badge tx-badge--{{ t.type }}">
+                                {{ t.type_label }}
+                            </span>
                         </td>
-                        <td>
-                            {{ totals[currency]['balance'] }}
+                        <td class="tx-amount tx-amount--{{ t.type }} tx-th-num">
+                            {% if t.type == 'income' %}+{% else %}−{% endif %}{{ "%.2f"|format(t.amount) }}
                         </td>
+                        <td class="tx-currency">{{ t.currency }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        <div>
-            <div class="transactions-block">
-                <h2 class="sub-title">
-                    Доходы
-                </h2>
-                <ul class="transaction-list">
-                    {% for income in incomes %}
-                    <li class="transaction-item">
-
-                        {{ income.description }}
-                        {{ income.amount }}
-                        {{ income.currency }}
-
-                        ({{ income.created_at.strftime('%y-%m-%d') }})
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="transactions-block transactions-spacing">
-                <h2 class="sub-title">
-                    Расходы
-                </h2>
-                <ul class="transaction-list">
-                    {% for expense in expenses %}
-                    <li class="transaction-item">
-                        {{ expense.description }}
-                        {{ expense.amount }}
-                        {{ expense.currency }}
-                        ({{ expense.created_at.strftime('%y-%m-%d') }})
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+        {% else %}
+        <p class="tx-empty">
+            За выбранный период транзакций нет.
+        </p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -43,17 +43,29 @@ async def add_expense(db: AsyncSession, user_id: int, description: str, amount: 
     return expense
 
 
-async def get_user_data(db: AsyncSession, user_id: int, month: Optional[str] = None):
+async def get_user_data(
+    db: AsyncSession,
+    user_id: int,
+    year: Optional[str] = "",
+    month: Optional[str] = "",
+):
     stmt_incomes = select(Income).where(Income.user_id == user_id)
     stmt_expenses = select(Expense).where(Expense.user_id == user_id)
 
-    if month:
-        month_date = datetime.strptime(month + "-01", "%Y-%m-%d")
+    if year and month:
+        month_date = datetime.strptime(f"{year}-{month}-01", "%Y-%m-%d")
         stmt_incomes = stmt_incomes.where(
-            func.date_trunc('month', Income.created_at) == month_date
+            func.date_trunc("month", Income.created_at) == month_date
         )
         stmt_expenses = stmt_expenses.where(
-            func.date_trunc('month', Expense.created_at) == month_date
+            func.date_trunc("month", Expense.created_at) == month_date
+        )
+    elif year:
+        stmt_incomes = stmt_incomes.where(
+            func.extract("year", Income.created_at) == int(year)
+        )
+        stmt_expenses = stmt_expenses.where(
+            func.extract("year", Expense.created_at) == int(year)
         )
 
     result_incomes = await db.execute(stmt_incomes)

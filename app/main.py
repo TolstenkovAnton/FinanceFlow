@@ -1,5 +1,6 @@
 import io
 import openpyxl
+from urllib.parse import quote
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
@@ -26,6 +27,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 COOKIE_ACCESS = "access_token"
 COOKIE_REFRESH = "refresh_token"
+
+MONTH_NAMES_RU = {
+    1: "Январь", 2: "Февраль", 3: "Март", 4: "Апрель",
+    5: "Май", 6: "Июнь", 7: "Июль", 8: "Август",
+    9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь",
+}
+
+MONTHS_RU = [
+    ("01", "Январь"), ("02", "Февраль"), ("03", "Март"),
+    ("04", "Апрель"), ("05", "Май"), ("06", "Июнь"),
+    ("07", "Июль"), ("08", "Август"), ("09", "Сентябрь"),
+    ("10", "Октябрь"), ("11", "Ноябрь"), ("12", "Декабрь"),
+]
 
 
 def set_auth_cookies(response: Response, tokens: Dict[str, str]) -> None:
@@ -200,41 +214,75 @@ async def add_expense(
 
 
 @app.get("/data")
-async def show_data(request: Request, month: str = "", db: AsyncSession = Depends(get_db)):
+async def show_data(
+    request: Request,
+    year: str = "",
+    month_num: str = "",
+    db: AsyncSession = Depends(get_db),
+):
     user, new_tokens = await get_user(request, db)
     if not user:
         return RedirectResponse("/login")
 
-    incomes, expenses = await crud.get_user_data(db, user.id, month)
+    date = f"{year}-{month_num}" if year and month_num else ""
+    export_period = f"{year}-{month_num}" if year and month_num else (year if year else "")
+    incomes, expenses = await crud.get_user_data(db, user.id, year, month_num)
 
-    incomes_dict = [i.__dict__ for i in incomes] if incomes else []
-    expenses_dict = [e.__dict__ for e in expenses] if expenses else []
+    transactions = []
+    for inc in incomes:
+        transactions.append({
+            "date": inc.created_at,
+            "description": inc.description,
+            "type": "income",
+            "type_label": "Доход",
+            "amount": float(inc.amount),
+            "currency": inc.currency,
+        })
+    for exp in expenses:
+        transactions.append({
+            "date": exp.created_at,
+            "description": exp.description,
+            "type": "expense",
+            "type_label": "Расход",
+            "amount": float(exp.amount),
+            "currency": exp.currency,
+        })
 
-    # current_month = month or datetime.now().strftime("%Y-%m")
+    def sort_key(t):
+        dt = t["date"]
+        if dt is None:
+            return 0
+        try:
+            return dt.timestamp()
+        except Exception:
+            return 0
+
+    transactions.sort(key=sort_key, reverse=True)
+
     totals: Dict[str, Dict[str, float]] = {}
-
-    for income in incomes_dict:
-        cur = income.get("currency", "RUB")
+    for t in transactions:
+        cur = t["currency"]
         totals.setdefault(cur, {"income": 0.0, "expense": 0.0, "balance": 0.0})
-        totals[cur]["income"] += float(income["amount"])
-
-    for expense in expenses_dict:
-        cur = expense.get("currency", "RUB")
-        totals.setdefault(cur, {"income": 0.0, "expense": 0.0, "balance": 0.0})
-        totals[cur]["expense"] += float(expense["amount"])
-
+        totals[cur]["income" if t["type"] == "income" else "expense"] += t["amount"]
     for cur in totals:
         totals[cur]["balance"] = totals[cur]["income"] - totals[cur]["expense"]
+
+    current_year = datetime.now().year
+    years = list(range(2020, current_year + 2))
 
     response = templates.TemplateResponse(
         request,
         "data.html",
         {
-            "user": user.__dict__,
-            "incomes": incomes_dict,
-            "expenses": expenses_dict,
-            "month": month,
+            "user": user,
+            "transactions": transactions,
             "totals": totals,
+            "year": year,
+            "month_num": month_num,
+            "date": date,
+            "export_period": export_period,
+            "years": years,
+            "months_ru": MONTHS_RU,
         },
     )
     if new_tokens:
@@ -242,13 +290,80 @@ async def show_data(request: Request, month: str = "", db: AsyncSession = Depend
     return response
 
 
+@app.get("/data/export")
+async def export_data(
+    request: Request,
+    date: str = "",
+    db: AsyncSession = Depends(get_db),
+):
+    user, new_tokens = await get_user(request, db)
+    if not user:
+        return RedirectResponse("/login")
+
+    year  = date[:4]  if len(date) >= 4 else ""
+    month = date[5:7] if len(date) >= 7 else ""
+    incomes, expenses = await crud.get_user_data(db, user.id, year, month)
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Транзакции"
+    ws.append(["Дата", "Описание", "Тип", "Сумма", "Валюта"])
+
+    rows = []
+    for inc in incomes:
+        rows.append((inc.created_at, inc.description, "Доход", float(inc.amount), inc.currency))
+    for exp in expenses:
+        rows.append((exp.created_at, exp.description, "Расход", float(exp.amount), exp.currency))
+
+    def exp_key(r):
+        dt = r[0]
+        if dt is None:
+            return 0
+        try:
+            return dt.timestamp()
+        except Exception:
+            return 0
+
+    rows.sort(key=exp_key, reverse=True)
+
+    for row in rows:
+        ws.append([
+            row[0].strftime("%d.%m.%Y %H:%M") if row[0] else "",
+            row[1],
+            row[2],
+            row[3],
+            row[4],
+        ])
+
+    buf = io.BytesIO()
+    wb.save(buf)
+    buf.seek(0)
+
+    if year and month:
+        period = f"{year}-{month}"
+    elif year:
+        period = year
+    else:
+        period = "всё_время"
+
+    filename = f"Финансовый_отчёт_{period}.xlsx"
+    encoded = quote(filename, safe="")
+    return Response(
+        content=buf.getvalue(),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded}"},
+    )
+
+
 @app.get("/profile")
 async def profile(request: Request, db: AsyncSession = Depends(get_db)):
     user, new_tokens = await get_user(request, db)
     if not user:
         return RedirectResponse("/login")
-    current_month = datetime.now().strftime("%Y-%m")
-    incomes, expenses = await crud.get_user_data(db, user.id, current_month)
+    _now = datetime.now()
+    incomes, expenses = await crud.get_user_data(
+        db, user.id, str(_now.year), f"{_now.month:02d}"
+    )
 
     totals: Dict[str, Dict[str, float]] = {}
     for income in incomes:
@@ -266,11 +381,7 @@ async def profile(request: Request, db: AsyncSession = Depends(get_db)):
     limit = float(user.monthly_limit) if user.monthly_limit else 0.0
     spent_percent = min(round(total_expenses_rub / limit * 100) if limit > 0 else 0, 100)
 
-    months_ru_dict = {
-        1: "Январь", 2: "Февраль", 3: "Март", 4: "Апрель",
-        5: "Май", 6: "Июнь", 7: "Июль", 8: "Август",
-        9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь",
-    }
+
 
     response = templates.TemplateResponse(
         request,
@@ -281,7 +392,7 @@ async def profile(request: Request, db: AsyncSession = Depends(get_db)):
             "spent_percent": spent_percent,
             "success": request.query_params.get("success"),
             "totals": totals,
-            "month_name": months_ru_dict[datetime.now().month],
+            "month_name": MONTH_NAMES_RU[datetime.now().month],
             "income_count": len(incomes),
             "expense_count": len(expenses),
         },
@@ -310,7 +421,7 @@ async def update_limit(
 @app.get("/analytics")
 async def analytics(
     request: Request,
-    month: str = "",
+    date: str = "",
     currency: str = "RUB",
     db: AsyncSession = Depends(get_db),
 ):
@@ -318,7 +429,9 @@ async def analytics(
     if not user:
         return RedirectResponse("/login")
 
-    incomes, expenses = await crud.get_user_data(db, user.id, month)
+    year  = date[:4]  if len(date) >= 4 else ""
+    month = date[5:7] if len(date) >= 7 else ""
+    incomes, expenses = await crud.get_user_data(db, user.id, year, month)
 
     incomes_converted = special_funcs.convert_all_to_currency([i.__dict__ for i in incomes], currency)
     expenses_converted = special_funcs.convert_all_to_currency([e.__dict__ for e in expenses], currency)
