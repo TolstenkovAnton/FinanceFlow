@@ -649,9 +649,7 @@ a:hover { text-decoration: none; }
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid rgba(255, 255, 255, 0.08);
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+    transition:background 0.2s;
 }
 
 .profile-link:hover .profile-icon {
@@ -1324,11 +1322,8 @@ a:hover { text-decoration: none; }
 .tx-amount--expense { color: #ef4444; }
 
 .tx-currency {
-    color: #444;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    color: #ccc;
+    max-width: 340px;
 }
 
 .tx-empty {
