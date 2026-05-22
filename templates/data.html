@@ -42,8 +42,10 @@
                 </select>
             </div>
             <div class="filter-actions">
-                <button type="submit" class="btn-apply">Применить</button>
-                <a href="/data" class="btn-clear">Сбросить</a>
+                <div class="filter-actions-left">
+                    <button type="submit" class="btn-apply">Применить</button>
+                    <a href="/data" class="btn-clear">Сбросить</a>
+                </div>
                 <a href="/data/export?date={{ export_period }}" class="btn-export">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                          fill="none" stroke="currentColor" stroke-width="2.2"
@@ -72,7 +74,7 @@
             <span class="summary-chip-divider">·</span>
             <span class="summary-chip-balance
                 {% if data.balance >= 0 %}summary-chip-balance--pos{% else %}summary-chip-balance--neg{% endif %}">
-                = {{ "%.2f"|format(data.balance) }}
+                Баланс = {{ "%.2f"|format(data.balance) }}
             </span>
         </div>
         {% endfor %}

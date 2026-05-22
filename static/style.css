@@ -1126,6 +1126,7 @@ a:hover { text-decoration: none; }
 
 .btn-export {
     display: inline-flex;
+    margin-left: auto;
     align-items: center;
     gap: 8px;
     padding: 11px;
@@ -1179,6 +1180,13 @@ a:hover { text-decoration: none; }
 }
 
 .filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.filter-actions-left {
     display: flex;
     align-items: center;
     gap: 10px;
