@@ -4,16 +4,16 @@
 <div class="data-layout">
     <div class="data-header">
         <h1 class="report-title">Финансовый отчёт</h1>
-        <a href="/data/export?date={{ export_period }}" class="btn-export">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="2.2"
-                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            Экспорт в Excel
-        </a>
+<!--        <a href="/data/export?date={{ export_period }}" class="btn-export">-->
+<!--            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"-->
+<!--                 fill="none" stroke="currentColor" stroke-width="2.2"-->
+<!--                 stroke-linecap="round" stroke-linejoin="round">-->
+<!--                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>-->
+<!--                <polyline points="7 10 12 15 17 10"/>-->
+<!--                <line x1="12" y1="15" x2="12" y2="3"/>-->
+<!--            </svg>-->
+<!--            Экспорт в Excel-->
+<!--        </a>-->
     </div>
     <div class="profile-card filter-card">
         <form method="get" action="/data" class="filter-bar">
@@ -41,10 +41,19 @@
                     {% endfor %}
                 </select>
             </div>
-
             <div class="filter-actions">
                 <button type="submit" class="btn-apply">Применить</button>
                 <a href="/data" class="btn-clear">Сбросить</a>
+                <a href="/data/export?date={{ export_period }}" class="btn-export">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2.2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Экспорт в Excel
+                </a>
             </div>
         </form>
     </div>

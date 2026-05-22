@@ -280,23 +280,23 @@ a:hover { text-decoration: none; }
 
 .app-main {
     min-height: calc(100vh - 65px);
-    background-color: #04040e;
+    background: linear-gradient(160deg, #00021d 0%, #0a2a6e 55%, #1565c0 100%);
     position: relative;
     padding: 44px 44px 60px;
 }
 
-.app-main::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url('/static/logo_Finance_Flow.png');
-    background-repeat: no-repeat;
-    background-size: 1000px;
-    background-position: right top;
-    opacity: 0.12;
-    pointer-events: none;
-    z-index: 0;
-}
+/*.app-main::before {*/
+/*    content: '';*/
+/*    position: absolute;*/
+/*    inset: 0;*/
+/*    background-image: url('/static/logo_Finance_Flow.png');*/
+/*    background-repeat: no-repeat;*/
+/*    background-size: 1000px;*/
+/*    background-position: right top;*/
+/*    opacity: 0.12;*/
+/*    pointer-events: none;*/
+/*    z-index: 0;*/
+/*}*/
 
 .forms-grid,
 .data-wrapper,
@@ -980,7 +980,7 @@ a:hover { text-decoration: none; }
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
+    transition: background 0.2s;
     text-align: center;
 }
 
@@ -1128,23 +1128,22 @@ a:hover { text-decoration: none; }
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
-    background: transparent;
-    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    padding: 11px;
+    background: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 600;
+    color: #000000;
+    font-size: 14px;
+    font-weight: 700;
     font-family: 'Montserrat', sans-serif;
     text-decoration: none;
-    transition: border-color 0.2s, background 0.2s;
+    transition: background 0.2s;
     white-space: nowrap;
 }
 
 .btn-export:hover {
     border-color: #0077FF;
-    background: rgba(0, 119, 255, 0.08);
-    color: #fff;
+
 }
 
 .filter-card {
