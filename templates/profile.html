@@ -60,9 +60,8 @@
                         type="number"
                         name="monthly_limit"
                         min="0"
-                        step="100"
-                        placeholder="Например, 50000"
-                        value="{% if user.monthly_limit and user.monthly_limit > 0 %}{{ user.monthly_limit|int }}{% endif %}"
+                        step=0.01
+                        placeholder="50000.50"
                         required
                     >
                 </div>

@@ -4,6 +4,9 @@
 {% endblock %}
 {% block content %}
 <div class="index-layout">
+    <div class="index-header">
+        <h1 class="index-title">Добавить транзакции</h1>
+    </div>
     <div class="forms-section">
         <div class="profile-card">
             <h2 class="profile-card-title">Добавить доход</h2>
@@ -36,7 +39,7 @@
                 </div>
                 <div class="field-group">
                     <label class="field-label">Сумма</label>
-                    <input class="field-input" type="number" step="0.01" min="0" name="amount" placeholder="0.00" required>
+                    <input class="field-input" type="number" step="0.01" min="0" name="amount" placeholder="5.00" required>
                 </div>
                 <div class="field-group">
                     <label class="field-label">Валюта</label>
@@ -51,7 +54,7 @@
         </div>
     </div>
     <div class="profile-card import-card">
-        <h2 class="profile-card-title">Импорт из Excel</h2>
+        <h2 class="import-excel-title">Импорт из Excel</h2>
         <div class="drop-zone" id="drop-zone">
             <svg class="drop-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="6" y="8" width="36" height="32" rx="4" stroke="currentColor" stroke-width="2.2"/>

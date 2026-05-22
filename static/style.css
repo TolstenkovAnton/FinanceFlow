@@ -189,20 +189,22 @@ a:hover { text-decoration: none; }
 
 .btn-apply {
     width: 100%;
-    padding: 13px;
-    background: #0077FF;
-    color: #fff;
-    border: none;
+    padding: 11px;
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     font-family: 'Montserrat', sans-serif;
     transition: background 0.2s;
     margin-top: 4px;
 }
 
-.btn-apply:hover { background: #005fcc; }
+.btn-apply:hover {
+    border-color: #0077FF
+}
 
 .auth-link {
     text-align: center;
@@ -306,9 +308,20 @@ a:hover { text-decoration: none; }
 .index-layout {
     display: flex;
     flex-direction: column;
-    gap: 32px;
     position: relative;
     z-index: 1;
+}
+
+.index-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.index-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 24px 0;
 }
 
 .forms-section {
@@ -946,9 +959,18 @@ a:hover { text-decoration: none; }
 }
 
 .import-card {
+    margin-top: 32px;
     display: flex;
     flex-direction: column;
     gap: 20px;
+}
+
+.import-excel-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 24px 0;
+    color: #fff;
+    margin-bottom: 0px;
 }
 
 .drop-zone {
@@ -1163,12 +1185,6 @@ a:hover { text-decoration: none; }
     display: flex;
     align-items: center;
     gap: 10px;
-}
-
-.filter-btn {
-    width: auto !important;
-    padding: 10px 22px !important;
-    margin-top: 0 !important;
 }
 
 .btn-clear {
