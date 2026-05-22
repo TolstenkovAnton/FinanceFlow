@@ -23,13 +23,8 @@
                 <span class="profile-info-label"><strong>Email:</strong> {{ user.email }}</span>
             </div>
             <div class="profile-info-row">
-                <span class="profile-info-label"><strong>Текущий лимит (₽):</strong> {{ user.monthly_limit }}</span>
-                    {% if user.monthly_limit and user.monthly_limit > 0 %}
-                        {{ "%.2f"|format(user.monthly_limit) }} ₽
-                    {% else %}
-                        Не установлен
-                    {% endif %}
-                </span>
+                <span class="profile-info-label"><strong>Текущий лимит (₽):</strong> {{ "%.2f"|format(user.monthly_limit) }}</span>
+                    
             </div>
         </div>
         <div class="profile-card">
