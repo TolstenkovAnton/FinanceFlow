@@ -105,3 +105,9 @@ async def get_total_expenses_for_month(db: AsyncSession, user_id: int, month_str
     )
     result = await db.execute(stmt)
     return result.scalar() or 0.0
+
+
+async def get_all_usernames(db: AsyncSession):
+    stmt = select(User.username)
+    all_usernames = await db.execute(stmt)
+    return all_usernames.scalars().all()
