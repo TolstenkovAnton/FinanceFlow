@@ -72,6 +72,8 @@ async def register(
     db: AsyncSession = Depends(get_db),
 ):
     username = username.strip()
+    if len(password) < 8:
+        return templates.TemplateResponse(request, "register.html", {"error": "Слишком лёгкий пароль"})
     user = await crud.create_user(db, username, email, password)
     if user:
         return RedirectResponse("/login", status_code=302)
