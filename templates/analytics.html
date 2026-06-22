@@ -8,40 +8,42 @@
 {% endblock %}
 {% block content %}
 <div class="analytics-wrapper">
-    <div class="analytics-sidebar">
-        <form method="get" action="/analytics">
-            <label class="currency-label">
-                Выберите валюту
-            </label>
-            <select class="field-select currency-select" name="currency">
-                <option
-                    value="USD"
-                    {% if currency == "USD" %}selected{% endif %}
-                >
-                    $ (USD)
-                </option>
-                <option
-                    value="RUB"
-                    {% if currency == "RUB" %}selected{% endif %}
-                >
-                    ₽ (RUB)
-                </option>
-                <option
-                    value="EUR"
-                    {% if currency == "EUR" %}selected{% endif %}
-                >
-                    € (EUR)
-                </option>
-            </select>
-            <button type="submit" class="btn-apply">
-                Применить
-            </button>
-        </form>
-        <div class="categories-section">
-            <p class="categories-title">
-                Категории
-            </p>
-            <div id="legend-container"></div>
+    <div class="profile-card">
+        <div class="analytics-sidebar">
+            <form method="get" action="/analytics">
+                <label class="currency-label">
+                    Выберите валюту
+                </label>
+                <select class="field-select currency-select" name="currency">
+                    <option
+                        value="USD"
+                        {% if currency == "USD" %}selected{% endif %}
+                    >
+                        $ (USD)
+                    </option>
+                    <option
+                        value="RUB"
+                        {% if currency == "RUB" %}selected{% endif %}
+                    >
+                        ₽ (RUB)
+                    </option>
+                    <option
+                        value="EUR"
+                        {% if currency == "EUR" %}selected{% endif %}
+                    >
+                        € (EUR)
+                    </option>
+                </select>
+                <button type="submit" class="btn-apply">
+                    Применить
+                </button>
+            </form>
+            <div class="categories-section">
+                <p class="categories-title">
+                    Категории
+                </p>
+                <div id="legend-container"></div>
+            </div>
         </div>
     </div>
     <div class="charts-area">
